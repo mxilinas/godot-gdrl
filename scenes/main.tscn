@@ -1,0 +1,66 @@
+[gd_scene load_steps=7 format=3 uid="uid://ba6v6rl4wpx4p"]
+
+[ext_resource type="Script" path="res://scripts/scene_manager.gd" id="1_snapt"]
+[ext_resource type="PackedScene" uid="uid://cglxnfwull8ru" path="res://prefabs/agent/agent.tscn" id="2_fk5q5"]
+[ext_resource type="Shader" path="res://prefabs/agent/circle.gdshader" id="3_8bcs5"]
+[ext_resource type="Script" path="res://addons/godot_rl_agents/sync.gd" id="4_i62hl"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nci30"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w40xy"]
+shader = ExtResource("3_8bcs5")
+shader_parameter/color = Color(1, 0.516667, 0, 1)
+
+[node name="SceneManager" type="Node2D" node_paths=PackedStringArray("player", "cpu")]
+script = ExtResource("1_snapt")
+player = NodePath("Player")
+cpu = NodePath("CPU")
+
+[node name="Camera" type="Camera2D" parent="."]
+offset = Vector2(600, 300)
+
+[node name="Walls" type="StaticBody2D" parent="."]
+position = Vector2(600, 300)
+
+[node name="Bottom" type="CollisionShape2D" parent="Walls"]
+position = Vector2(0, 300)
+shape = SubResource("WorldBoundaryShape2D_nci30")
+
+[node name="Top" type="CollisionShape2D" parent="Walls"]
+position = Vector2(0, -300)
+rotation = 3.14159
+shape = SubResource("WorldBoundaryShape2D_nci30")
+
+[node name="Left" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-600, 0)
+rotation = 1.5708
+shape = SubResource("WorldBoundaryShape2D_nci30")
+
+[node name="Right" type="CollisionShape2D" parent="Walls"]
+position = Vector2(600, 0)
+rotation = -1.5708
+shape = SubResource("WorldBoundaryShape2D_nci30")
+
+[node name="Player" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_fk5q5")]
+position = Vector2(300, 300)
+vibrate = true
+interaction_partner = NodePath("../CPU")
+max_distance = 200.0
+
+[node name="AgentController" parent="Player" index="2"]
+control_mode = 4
+expert_demo_save_path = "res://demos/demo.json"
+
+[node name="CPU" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_fk5q5")]
+position = Vector2(900, 300)
+auto = true
+interaction_partner = NodePath("../Player")
+
+[node name="Mesh" parent="CPU" index="1"]
+material = SubResource("ShaderMaterial_w40xy")
+
+[node name="Sync" type="Node" parent="."]
+script = ExtResource("4_i62hl")
+
+[editable path="Player"]
+[editable path="CPU"]

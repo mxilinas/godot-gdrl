@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://cglxnfwull8ru"]
+
+[ext_resource type="Shader" path="res://prefabs/agent/circle.gdshader" id="1_7ayaj"]
+[ext_resource type="Script" path="res://prefabs/agent/agent.gd" id="1_ibw02"]
+[ext_resource type="Script" path="res://prefabs/agent/agent_controller.gd" id="3_371o7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7k38v"]
+radius = 25.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vc3w7"]
+shader = ExtResource("1_7ayaj")
+shader_parameter/color = Color(0, 1, 0.983333, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_vow8r"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_ifb1h"]
+device = -1
+keycode = 82
+unicode = 114
+
+[node name="Agent" type="RigidBody2D"]
+gravity_scale = 0.0
+continuous_cd = 2
+max_contacts_reported = 100
+contact_monitor = true
+linear_damp = 5.0
+script = ExtResource("1_ibw02")
+movement_speed = 3000.0
+mouse_velocity_scale = 0.1
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_7k38v")
+
+[node name="Mesh" type="MeshInstance2D" parent="."]
+material = SubResource("ShaderMaterial_vc3w7")
+scale = Vector2(50, 50)
+mesh = SubResource("QuadMesh_vow8r")
+
+[node name="AgentController" type="Node2D" parent="."]
+script = ExtResource("3_371o7")
+control_mode = 1
+remove_last_episode_key = SubResource("InputEventKey_ifb1h")
+action_repeat = 8
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
