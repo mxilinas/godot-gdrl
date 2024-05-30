@@ -128,10 +128,6 @@ func velocity_reward(rb : RigidBody2D):
 	return reward
 
 
-func synchrony_reward():
-	pass
-
-
 ## Return a random position inside the given play area.
 func random_position(area : Rect2) -> Vector2: 
 	var random_x = randf_range(area.position.x, area.position.x + area.size.x)
