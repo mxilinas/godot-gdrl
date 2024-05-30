@@ -26,7 +26,6 @@ contact_monitor = true
 linear_damp = 5.0
 script = ExtResource("1_ibw02")
 movement_speed = 3000.0
-mouse_velocity_scale = 0.1
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_7k38v")
