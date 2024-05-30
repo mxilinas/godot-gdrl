@@ -75,7 +75,7 @@ func _on_body_entered(body : PhysicsBody2D):
 		if vibrate:
 			Input.start_joy_vibration(0, 0.0, 1.0, 0.1)
 
-	if body.name == "Player":
+	if body.name == "CPU" or body.name == "Player":
 		agent_controller.reward += 1
 		if vibrate:
 			Input.start_joy_vibration(0, 1.0, 0.0, 0.1)
