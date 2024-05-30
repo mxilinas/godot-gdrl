@@ -6,7 +6,6 @@ signal debug_message(message : String)
 # Settings
 
 @export var movement_speed : float = 2500.0
-@export var mouse_velocity_scale : float = 0.001
 
 @export var vibrate := false
 @export var debug := false

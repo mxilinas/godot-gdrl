@@ -46,9 +46,7 @@ func set_action(action = null) -> void:
 			action["move"][1]
 			).limit_length(1.0)
 	else:
-		var mouse_velocity = Input.get_last_mouse_velocity()
-		mouse_velocity *= _player.mouse_velocity_scale
-		move_action = mouse_velocity.limit_length(1.0)
+		move_action = Input.get_vector("left", "right", "up", "down").limit_length(1.0)
 
 
 func get_action():
