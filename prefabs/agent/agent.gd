@@ -18,6 +18,9 @@ signal debug_message(message : String)
 @export var max_distance : float = 500
 @export_range(0, 1) var distance_reward_strength : float = 0.001
 
+@export_group("Velocity Reward Settings")
+@export var velocity_reward_strength: float = 0.001
+@export var velocity_reward_debug := false
 
 # Member Variables
 
@@ -43,9 +46,9 @@ func _input(event):
 				vibrate = true
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 
-	agent_controller.reward += distance_reward(min_distance, max_distance)
+	agent_controller.reward += distance_reward()
 
 	if auto:
 		var dir_to_target = (target_position - position).limit_length(1.0)
@@ -76,13 +79,10 @@ func _on_body_entered(body : PhysicsBody2D):
 			Input.start_joy_vibration(0, 0.0, 1.0, 0.1)
 
 	if body.name == "CPU" or body.name == "Player":
-		agent_controller.reward += 1
-		if vibrate:
-			Input.start_joy_vibration(0, 1.0, 0.0, 0.1)
+		agent_controller.reward += velocity_reward(body)
 
 
-
-func _on_body_exited(body):
+func _on_body_exited(_body):
 	is_colliding = false
 
 
@@ -103,7 +103,7 @@ func _on_timer_timeout():
 ## Positive when the agent is further than [param max_distance] to its
 ## interaction partner and negative when the agent is closer than
 ## [param min_distance].
-func distance_reward(min_distance, max_distance, strength = 0.001):
+func distance_reward(strength = 0.001):
 	var reward : float = 0.0
 	var distance = global_position.distance_to(interaction_partner.global_position)
 	if distance > max_distance:
@@ -114,6 +114,22 @@ func distance_reward(min_distance, max_distance, strength = 0.001):
 		reward += strength
 		debug_message.emit(self.name + " rewarded for distance")
 	return reward
+
+
+## Apply a reward based on the similarity in velocity of the agents colliding.
+func velocity_reward(rb : RigidBody2D):
+	var diff = abs(rb.linear_velocity.length() - linear_velocity.length()) 
+	var reward = diff * velocity_reward_strength
+	if velocity_reward_debug:
+		print(reward)
+	agent_controller.reward += reward
+	if vibrate:
+		Input.start_joy_vibration(0, 1.0, 0.0, 0.1)
+	return reward
+
+
+func synchrony_reward():
+	pass
 
 
 ## Return a random position inside the given play area.

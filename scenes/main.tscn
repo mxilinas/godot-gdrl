@@ -46,6 +46,7 @@ position = Vector2(300, 300)
 vibrate = true
 interaction_partner = NodePath("../CPU")
 max_distance = 200.0
+velocity_reward_debug = true
 
 [node name="AgentController" parent="Player" index="2"]
 control_mode = 4
