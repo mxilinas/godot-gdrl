@@ -43,6 +43,7 @@ shape = SubResource("WorldBoundaryShape2D_nci30")
 
 [node name="Player" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_oea7g")]
 position = Vector2(353, 208)
+mouse_velocity_scale = 0.001
 vibrate = true
 interaction_partner = NodePath("../CPU")
 max_distance = 200.0
@@ -52,6 +53,7 @@ expert_demo_save_path = "res://demos/demo.json"
 
 [node name="CPU" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_oea7g")]
 position = Vector2(892, 382)
+mouse_velocity_scale = 0.001
 interaction_partner = NodePath("../Player")
 
 [node name="Mesh" parent="CPU" index="1"]
