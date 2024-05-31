@@ -1,0 +1,3 @@
+- Synchronicity reward
+- Adversarial learning
+- Wizard of Oz reward
