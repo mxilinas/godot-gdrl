@@ -53,7 +53,7 @@ expert_demo_save_path = "res://demos/demo.json"
 
 [node name="CPU" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_fk5q5")]
 position = Vector2(900, 300)
-movement_speed = 0.0
+auto = true
 interaction_partner = NodePath("../Player")
 
 [node name="Mesh" parent="CPU" index="1"]
