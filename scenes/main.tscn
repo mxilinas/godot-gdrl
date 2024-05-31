@@ -19,7 +19,7 @@ cpu = NodePath("CPU")
 [node name="Camera" type="Camera2D" parent="."]
 offset = Vector2(600, 300)
 
-[node name="Walls" type="StaticBody2D" parent="."]
+[node name="Walls" type="StaticBody2D" parent="." groups=["Walls"]]
 position = Vector2(600, 300)
 
 [node name="Bottom" type="CollisionShape2D" parent="Walls"]
@@ -43,10 +43,9 @@ shape = SubResource("WorldBoundaryShape2D_nci30")
 
 [node name="Player" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_fk5q5")]
 position = Vector2(300, 300)
-vibrate = true
+should_vibrate = true
 interaction_partner = NodePath("../CPU")
 max_distance = 200.0
-velocity_reward_debug = true
 
 [node name="AgentController" parent="Player" index="2"]
 control_mode = 4
@@ -54,7 +53,7 @@ expert_demo_save_path = "res://demos/demo.json"
 
 [node name="CPU" parent="." node_paths=PackedStringArray("interaction_partner") instance=ExtResource("2_fk5q5")]
 position = Vector2(900, 300)
-auto = true
+movement_speed = 0.0
 interaction_partner = NodePath("../Player")
 
 [node name="Mesh" parent="CPU" index="1"]

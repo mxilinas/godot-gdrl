@@ -18,7 +18,7 @@ device = -1
 keycode = 82
 unicode = 114
 
-[node name="Agent" type="RigidBody2D"]
+[node name="Agent" type="RigidBody2D" groups=["Agents"]]
 gravity_scale = 0.0
 continuous_cd = 2
 max_contacts_reported = 100
