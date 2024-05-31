@@ -49,8 +49,6 @@ func _input(event):
 		if event.is_action_pressed("release_mouse"):
 			if should_vibrate:
 				should_vibrate = false
-			else:
-				should_vibrate = true
 
 
 func _physics_process(_delta):
