@@ -1,3 +1,16 @@
-- Synchronicity reward
+- Synchronicity reward *
 - Adversarial learning
 - Wizard of Oz reward
+
+## velocity
+from initial calculate change after collision.
+the difference between the inital and new velocity after collision maps to 
+vibration.
+
+## Synchrony (Over a period of time)
+Does it make sense to measure instantanious synchrony?
+Maybe measure synchrony over a period of interaction.
+
+Maybe try to find whether it is in phase or anti-phase.
+
+What is the frequency of the velocity updates?

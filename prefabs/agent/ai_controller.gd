@@ -1,5 +1,5 @@
 extends AIController2D
-class_name AgentController
+class_name AIController
 
 
 # Variables

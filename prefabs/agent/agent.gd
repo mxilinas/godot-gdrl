@@ -11,7 +11,6 @@ signal debug_message(message : String)
 @export var auto := false
 
 @export_group("Nodes")
-@export var interaction_partner : Agent
 
 @export_group("Distance Reward Settings")
 @export var min_distance : float = 100
@@ -29,12 +28,14 @@ signal debug_message(message : String)
 
 # Member Variables
 
-@onready var agent_controller : AgentController = $AgentController
+@onready var agent_controller : AIController = $AIController
 @onready var max_velocity = movement_speed / self.linear_damp
-@onready var timer : Timer = $Timer
+@onready var walk_timer : Timer = $WalkTimer
 var is_colliding := false
 var target_position : Vector2
 var is_vibrating := false
+var phase = 0
+var interaction_partner : Agent
 
 
 # Engine Functions
@@ -78,11 +79,11 @@ func _physics_process(_delta):
 func _on_body_entered(body : PhysicsBody2D):
 	is_colliding = true
 
-	if body.is_in_group("Walls"):
+	if body.is_in_group("WALL"):
 		agent_controller.reward -= 1
 		collision_vibration(collision_vibtation_strength)
 
-	if body.is_in_group("Agents"):
+	if body.is_in_group("CIRCLE"):
 		agent_controller.reward += velocity_reward(body)
 		collision_vibration(collision_vibtation_strength)
 
@@ -96,11 +97,9 @@ func _on_debug_message(message : String):
 		print(message)
 
 
-## Change the automatic target position when the timer runs out.
-## Assigns a new randomized timeout.
-func _on_timer_timeout():
+func _on_walk_timer_timeout():
 	target_position = random_position(get_viewport_rect())
-	timer.wait_time = randf_range(0.0, 3.0)
+	walk_timer.wait_time = randf_range(0.0, 3.0)
 
 
 # Helper Functions
@@ -131,6 +130,24 @@ func velocity_reward(rb : RigidBody2D) -> float:
 		print(reward)
 
 	return reward
+
+
+## Reward this agent based on synchronicity.
+func sync_reward():
+	phase = (linear_velocity.normalized() / -position.normalized())
+	phase = atan2(phase.x, phase.y)
+	var relative_phase = interaction_partner.phase - phase
+
+
+## Get the coherence of phase observations.
+func coherence(phase_observations: Array[float]) -> float:
+	var sum : Vector2
+	var n = phase_observations.size()
+
+	for obs in phase_observations:
+		sum += Vector2(cos(obs), sin(obs))
+
+	return 1 - sum.length() / n
 
 
 ## Return a random position inside the given area.

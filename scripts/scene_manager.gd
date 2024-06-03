@@ -5,14 +5,16 @@ class_name SceneManager
 # Variables
 
 @export_group("Agents")
-@export var player : Agent
-@export var cpu : Agent
+@onready var player : Agent = $Player
+@onready var cpu : Agent = $CPU
 
 
 # Engine Functions
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	player.interaction_partner = cpu
+	cpu.interaction_partner = player
 
 
 func _input(event):
