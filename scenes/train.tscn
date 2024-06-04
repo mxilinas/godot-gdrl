@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://c8jsb7qbt33ks"]
+[gd_scene load_steps=9 format=3 uid="uid://c8jsb7qbt33ks"]
 
 [ext_resource type="Script" path="res://scripts/scene_manager.gd" id="1_nyq3i"]
 [ext_resource type="PackedScene" uid="uid://cglxnfwull8ru" path="res://prefabs/agent/agent.tscn" id="2_7xhe4"]
+[ext_resource type="Script" path="res://scripts/synchronicity.gd" id="2_212ju"]
 [ext_resource type="Shader" path="res://prefabs/agent/circle.gdshader" id="3_5o2t5"]
 [ext_resource type="Script" path="res://addons/godot_rl_agents/sync.gd" id="4_cidlr"]
 
@@ -18,11 +19,15 @@ shader_parameter/color = Color(1, 0.33724, 0.663285, 1)
 [node name="SceneManager" type="Node2D"]
 script = ExtResource("1_nyq3i")
 
+[node name="Synchronicity" type="Node2D" parent="." node_paths=PackedStringArray("player", "cpu")]
+script = ExtResource("2_212ju")
+player = NodePath("../Player")
+cpu = NodePath("../CPU")
+visualize = true
+
 [node name="Camera" type="Camera2D" parent="."]
-offset = Vector2(600, 300)
 
 [node name="Walls" type="StaticBody2D" parent="." groups=["WALL"]]
-position = Vector2(600, 300)
 
 [node name="Bottom" type="CollisionShape2D" parent="Walls"]
 position = Vector2(0, 300)
@@ -45,15 +50,18 @@ shape = SubResource("WorldBoundaryShape2D_nci30")
 
 [node name="Player" parent="." instance=ExtResource("2_7xhe4")]
 material = SubResource("ShaderMaterial_gy6h1")
-position = Vector2(300, 300)
-should_vibrate = true
+position = Vector2(-300, 0)
+distance_reward_strength = 0.0
+velocity_reward_strength = 0.0
 
 [node name="AIController" parent="Player" index="2"]
 control_mode = 2
 
 [node name="CPU" parent="." instance=ExtResource("2_7xhe4")]
 material = SubResource("ShaderMaterial_ynb44")
-position = Vector2(898, 300)
+position = Vector2(300, 0)
+distance_reward_strength = 0.0
+velocity_reward_strength = 0.0
 
 [node name="AIController" parent="CPU" index="2"]
 control_mode = 2

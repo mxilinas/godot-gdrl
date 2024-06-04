@@ -2,7 +2,6 @@ extends RigidBody2D
 class_name Agent
 signal debug_message(message : String)
 
-
 # Settings
 
 @export var movement_speed : float = 2500.0
@@ -28,13 +27,12 @@ signal debug_message(message : String)
 
 # Member Variables
 
-@onready var agent_controller : AIController = $AIController
+@onready var ai_controller : AIController = $AIController
 @onready var max_velocity = movement_speed / self.linear_damp
 @onready var walk_timer : Timer = $WalkTimer
 var is_colliding := false
 var target_position : Vector2
 var is_vibrating := false
-var phase = 0
 var interaction_partner : Agent
 
 
@@ -42,7 +40,7 @@ var interaction_partner : Agent
 
 func _ready():
 	self.debug_message.connect(_on_debug_message)
-	agent_controller.init(self)
+	ai_controller.init(self)
 
 
 func _input(event):
@@ -53,7 +51,8 @@ func _input(event):
 
 
 func _physics_process(_delta):
-	agent_controller.reward += distance_reward()
+
+	ai_controller.reward += distance_reward()
 	movement_vibration()
 
 	if auto:
@@ -61,17 +60,17 @@ func _physics_process(_delta):
 		apply_force(dir_to_target * movement_speed)
 		return
 
-	if agent_controller.needs_reset:
-		agent_controller.done = true
-		agent_controller.reset()
+	if ai_controller.needs_reset:
+		ai_controller.done = true
+		ai_controller.reset()
 		debug_message.emit("reset!")
 
-	if agent_controller.heuristic == "human":
+	if ai_controller.heuristic == "human":
 		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			return
-		agent_controller.set_action()
+		ai_controller.set_action()
 
-	var move_action : Vector2 = agent_controller.move_action
+	var move_action : Vector2 = ai_controller.move_action
 	debug_message.emit(str(move_action))
 	apply_force(move_action * movement_speed)
 
@@ -80,11 +79,11 @@ func _on_body_entered(body : PhysicsBody2D):
 	is_colliding = true
 
 	if body.is_in_group("WALL"):
-		agent_controller.reward -= 1
+		ai_controller.reward -= 2
 		collision_vibration(collision_vibtation_strength)
 
 	if body.is_in_group("CIRCLE"):
-		agent_controller.reward += velocity_reward(body)
+		ai_controller.reward += velocity_reward(body)
 		collision_vibration(collision_vibtation_strength)
 
 
@@ -124,30 +123,12 @@ func distance_reward(strength = 0.001) -> float:
 func velocity_reward(rb : RigidBody2D) -> float:
 	var diff = abs(rb.linear_velocity.length() - linear_velocity.length()) 
 	var reward = diff * velocity_reward_strength
-	agent_controller.reward += reward
+	ai_controller.reward += reward
 
 	if velocity_reward_debug:
 		print(reward)
 
 	return reward
-
-
-## Reward this agent based on synchronicity.
-func sync_reward():
-	phase = (linear_velocity.normalized() / -position.normalized())
-	phase = atan2(phase.x, phase.y)
-	var relative_phase = interaction_partner.phase - phase
-
-
-## Get the coherence of phase observations.
-func coherence(phase_observations: Array[float]) -> float:
-	var sum : Vector2
-	var n = phase_observations.size()
-
-	for obs in phase_observations:
-		sum += Vector2(cos(obs), sin(obs))
-
-	return 1 - sum.length() / n
 
 
 ## Return a random position inside the given area.

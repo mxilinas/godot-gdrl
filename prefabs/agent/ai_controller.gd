@@ -4,26 +4,26 @@ class_name AIController
 
 # Variables
 
-@onready var agent : Agent = get_parent()
 var move_action := Vector2.ZERO
 
-@export_group("Observations")
-@export_range(0, 100) var history_length : int = 2
-const observations_n = 5
+@export_range(0, 100) var history_length : int = 1
+const observations_n = 9
+
 var observations : Array[float] = []
-var obs_hist : Array[Array] = []
+var prev_observations : Array[Array] = []
 
 
 # Engine Functions
 
 func _ready():
+	reset_after = Constants.episode_length
 
-	var empty : Array[float]
+	# Initialize prev_observations with zeros.
+	var empty : Array[float] = []
 	empty.resize(observations_n)
 	empty.fill(0.0)
-
-	obs_hist.resize(history_length)
-	obs_hist.fill(empty)
+	prev_observations.resize(history_length)
+	prev_observations.fill(empty)
 
 
 # Reinforcment Learning Functions
@@ -33,23 +33,27 @@ func _ready():
 # - the relative position and velocity of this agent's interaction partner.
 # - whether or not this agent is colliding with another physics body.
 func get_obs() -> Dictionary:
-	var partner = agent.interaction_partner
+	var partner = _player.interaction_partner
 	var partner_position = to_local(partner.position)
 	var partner_velocity = to_local(partner.linear_velocity)
 
 	var new_observations : Array[float] = [
+		_player.position.x,
+		_player.position.y,
+		_player.linear_velocity.x,
+		_player.linear_velocity.y,
 		partner_position.x,
 		partner_position.y,
 		partner_velocity.x,
 		partner_velocity.y,
-		agent.is_colliding,
+		_player.is_colliding,
 	]
 
-	obs_hist.push_front(new_observations)
-	obs_hist.pop_back()
+	prev_observations.push_front(new_observations)
+	prev_observations.pop_back()
 
 	observations = []
-	for obs in obs_hist:
+	for obs in prev_observations:
 		for ob in obs:
 			observations.append(ob)
 
@@ -75,7 +79,8 @@ func set_action(action = null) -> void:
 			action["move"][1]
 			).limit_length(1.0)
 	else:
-		move_action = Input.get_vector("left", "right", "up", "down").limit_length(1.0)
+		var input = Input.get_vector("left", "right", "up", "down")
+		move_action = input.limit_length(1.0)
 
 
 func get_action():

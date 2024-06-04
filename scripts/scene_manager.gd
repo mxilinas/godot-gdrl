@@ -1,12 +1,15 @@
 extends Node2D
 class_name SceneManager
 
+signal end_episode
+
 
 # Variables
 
 @export_group("Agents")
 @onready var player : Agent = $Player
 @onready var cpu : Agent = $CPU
+var n_steps = 0
 
 
 # Engine Functions
@@ -27,6 +30,11 @@ func _input(event):
 
 func _physics_process(delta):
 	queue_redraw()
+
+	n_steps += 1
+	if n_steps > Constants.episode_length:
+		end_episode.emit()
+		n_steps = 0
 
 
 func _draw():
@@ -52,5 +60,6 @@ func debug_distance_reward(agent : Agent) -> void:
 	var max_color = Color.RED
 	max_color.a = 0.25
 	if agent.debug:
-		draw_circle(agent.position, agent.max_distance, min_color)
-		draw_circle(agent.position, agent.min_distance, max_color)
+		draw_circle(agent.position, agent.max_dist, min_color)
+		draw_circle(agent.position, agent.min_dist, max_color)
+
