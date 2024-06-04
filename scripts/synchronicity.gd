@@ -4,8 +4,8 @@ extends Node2D
 ##
 ## The period of interaction is defined as the number of steps per episode.
 
-@export var player : Agent
-@export var cpu : Agent
+@export var player : Agent;
+@export var cpu : Agent;
 
 var player_positions : Array[Vector2] = []
 var cpu_positions : Array[Vector2] = []
