@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://cglxnfwull8ru"]
 
-[ext_resource type="Script" path="res://prefabs/agent/agent.gd" id="1_ibw02"]
-[ext_resource type="Material" uid="uid://hdwqfm803php" path="res://prefabs/agent/circle.material" id="2_fpfhu"]
-[ext_resource type="Script" path="res://prefabs/agent/ai_controller.gd" id="3_371o7"]
+[ext_resource type="Script" path="res://scripts/agent.gd" id="1_ibw02"]
+[ext_resource type="Material" uid="uid://hdwqfm803php" path="res://materials/circle.material" id="2_fpfhu"]
+[ext_resource type="Script" path="res://scripts/ai_controller.gd" id="3_371o7"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7k38v"]
 radius = 25.0
@@ -14,7 +14,7 @@ device = -1
 keycode = 82
 unicode = 114
 
-[node name="Agent" type="RigidBody2D" groups=["CIRCLE"]]
+[node name="Agent" type="RigidBody2D" node_paths=PackedStringArray("ai_controller", "timer") groups=["CIRCLE"]]
 material = ExtResource("2_fpfhu")
 gravity_scale = 0.0
 continuous_cd = 1
@@ -22,7 +22,8 @@ max_contacts_reported = 1000
 contact_monitor = true
 linear_damp = 5.0
 script = ExtResource("1_ibw02")
-movement_speed = 3000.0
+ai_controller = NodePath("AIController")
+timer = NodePath("Timer")
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_7k38v")
@@ -37,10 +38,10 @@ script = ExtResource("3_371o7")
 remove_last_episode_key = SubResource("InputEventKey_ifb1h")
 action_repeat = 8
 
-[node name="WalkTimer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="."]
 wait_time = 2.0
 autostart = true
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_body_exited"]
-[connection signal="timeout" from="WalkTimer" to="." method="_on_walk_timer_timeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_walk_timer_timeout"]

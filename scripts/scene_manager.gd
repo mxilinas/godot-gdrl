@@ -6,19 +6,16 @@ signal end_episode
 
 # Variables
 
-@export_group("Agents")
-@onready var player : Agent = $Player
-@onready var cpu : Agent = $CPU
+@export_category("Agents")
+@export var player : Agent;
+@export var cpu : Agent;
 var n_steps = 0
-
 
 # Engine Functions
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	player.interaction_partner = cpu
-	cpu.interaction_partner = player
-
+	end_episode.connect(_end_episode)
 
 func _input(event):
 	if event is InputEventKey:
@@ -26,7 +23,6 @@ func _input(event):
 			get_tree().quit()
 		if event.is_action_pressed("release_mouse"):
 			toggle_capture_mouse()
-
 
 func _physics_process(delta):
 	queue_redraw()
@@ -36,11 +32,13 @@ func _physics_process(delta):
 		end_episode.emit()
 		n_steps = 0
 
-
 func _draw():
 	debug_distance_reward(player)
 	debug_distance_reward(cpu)
 
+func _end_episode() -> void:
+	player.ai_controller.reset()
+	cpu.ai_controller.reset()
 
 # Helper Functions
 
@@ -52,7 +50,6 @@ func toggle_capture_mouse() -> void:
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-
 ## Draw circle around the agents corresponding to their minimum and maximum
 ## reward distances.
 func debug_distance_reward(agent : Agent) -> void:
@@ -60,6 +57,5 @@ func debug_distance_reward(agent : Agent) -> void:
 	var max_color = Color.RED
 	max_color.a = 0.25
 	if agent.debug:
-		draw_circle(agent.position, agent.max_dist, min_color)
-		draw_circle(agent.position, agent.min_dist, max_color)
+		pass
 

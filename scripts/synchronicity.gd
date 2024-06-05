@@ -4,27 +4,25 @@ extends Node2D
 ##
 ## The period of interaction is defined as the number of steps per episode.
 
-@export var player : Agent;
-@export var cpu : Agent;
+@export var player : Agent
+@export var cpu : Agent
+@export var scene_manager : SceneManager
 
 var player_positions : Array[Vector2] = []
 var cpu_positions : Array[Vector2] = []
 
 var relative_phases : Array[float] = []
 
-var steps : int = 0
-
-signal end_episode
-
 @export_group("Visualize")
 @export var visualize : bool = false
 @export var bins : int = 9
+@export var print : bool = false
 @onready var bin_colors : Array[Color] = random_colors(bins)
 
 # Engine Functions
 
 func _ready():
-	end_episode.connect(_on_end_episode)
+	scene_manager.end_episode.connect(_on_end_episode)
 
 func _draw():
 	var bin_width = 2 * PI / bins
@@ -34,13 +32,6 @@ func _draw():
 func _physics_process(_delta):
 
 	queue_redraw()
-
-	steps += 1
-
-	if steps > Constants.episode_length:
-		end_episode.emit()
-		steps = 0
-		return
 
 	player_positions.append(player.position)
 	cpu_positions.append(cpu.position)
@@ -55,6 +46,9 @@ func _on_end_episode():
 
 	relative_phases = compute_relative_phases(player_phases, cpu_phases)
 	var reward := coherence(relative_phases)
+
+	if print:
+		print(player_phases.size())
 
 	cpu.ai_controller.reward += reward
 	player.ai_controller.reward += reward

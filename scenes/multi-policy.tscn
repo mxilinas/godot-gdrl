@@ -1,31 +1,37 @@
 [gd_scene load_steps=9 format=3 uid="uid://c8jsb7qbt33ks"]
 
-[ext_resource type="Script" path="res://scripts/scene_manager.gd" id="1_nyq3i"]
-[ext_resource type="PackedScene" uid="uid://cglxnfwull8ru" path="res://prefabs/agent/agent.tscn" id="2_7xhe4"]
-[ext_resource type="Script" path="res://scripts/synchronicity.gd" id="2_212ju"]
-[ext_resource type="Shader" path="res://prefabs/agent/circle.gdshader" id="3_5o2t5"]
-[ext_resource type="Script" path="res://addons/godot_rl_agents/sync.gd" id="4_cidlr"]
+[ext_resource type="Script" path="res://scripts/scene_manager.gd" id="1_piedo"]
+[ext_resource type="Script" path="res://scripts/synchronicity.gd" id="2_m6noc"]
+[ext_resource type="PackedScene" uid="uid://cglxnfwull8ru" path="res://prefabs/agent.tscn" id="3_g7qh2"]
+[ext_resource type="Shader" path="res://materials/circle.gdshader" id="4_7cwwt"]
+[ext_resource type="Script" path="res://addons/godot_rl_agents/sync.gd" id="5_iksun"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nci30"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_gy6h1"]
-shader = ExtResource("3_5o2t5")
+shader = ExtResource("4_7cwwt")
 shader_parameter/color = Color(2.5028e-06, 0.693367, 0.84818, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ynb44"]
-shader = ExtResource("3_5o2t5")
+shader = ExtResource("4_7cwwt")
 shader_parameter/color = Color(1, 0.33724, 0.663285, 1)
 
-[node name="SceneManager" type="Node2D"]
-script = ExtResource("1_nyq3i")
+[node name="SceneManager" type="Node2D" node_paths=PackedStringArray("player", "cpu")]
+position = Vector2(602, 300)
+script = ExtResource("1_piedo")
+player = NodePath("Player")
+cpu = NodePath("CPU")
 
-[node name="Synchronicity" type="Node2D" parent="." node_paths=PackedStringArray("player", "cpu")]
-script = ExtResource("2_212ju")
+[node name="Synchronicity" type="Node2D" parent="." node_paths=PackedStringArray("player", "cpu", "scene_manager")]
+script = ExtResource("2_m6noc")
 player = NodePath("../Player")
 cpu = NodePath("../CPU")
+scene_manager = NodePath("..")
 visualize = true
 
 [node name="Camera" type="Camera2D" parent="."]
+position = Vector2(-600, -300)
+offset = Vector2(600, 300)
 
 [node name="Walls" type="StaticBody2D" parent="." groups=["WALL"]]
 
@@ -48,26 +54,24 @@ position = Vector2(600, 0)
 rotation = -1.5708
 shape = SubResource("WorldBoundaryShape2D_nci30")
 
-[node name="Player" parent="." instance=ExtResource("2_7xhe4")]
+[node name="Player" parent="." node_paths=PackedStringArray("other_agent") instance=ExtResource("3_g7qh2")]
 material = SubResource("ShaderMaterial_gy6h1")
 position = Vector2(-300, 0)
-distance_reward_strength = 0.0
-velocity_reward_strength = 0.0
+other_agent = NodePath("../CPU")
 
 [node name="AIController" parent="Player" index="2"]
-control_mode = 2
+policy_name = "0"
 
-[node name="CPU" parent="." instance=ExtResource("2_7xhe4")]
+[node name="CPU" parent="." node_paths=PackedStringArray("other_agent") instance=ExtResource("3_g7qh2")]
 material = SubResource("ShaderMaterial_ynb44")
 position = Vector2(300, 0)
-distance_reward_strength = 0.0
-velocity_reward_strength = 0.0
+other_agent = NodePath("../Player")
 
 [node name="AIController" parent="CPU" index="2"]
-control_mode = 2
+policy_name = "1"
 
 [node name="Sync" type="Node" parent="."]
-script = ExtResource("4_cidlr")
+script = ExtResource("5_iksun")
 
 [editable path="Player"]
 [editable path="CPU"]

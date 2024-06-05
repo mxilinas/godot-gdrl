@@ -58,7 +58,7 @@ func get_action_space() -> Dictionary:
 		"the get get_action_space method is not implemented when extending from ai_controller"
 	)
 	return {
-		"example_actions_continous": {"size": 2, "action_type": "continuous"},
+		"example_actions_continuous": {"size": 2, "action_type": "continuous"},
 		"example_actions_discrete": {"size": 2, "action_type": "discrete"},
 	}
 
